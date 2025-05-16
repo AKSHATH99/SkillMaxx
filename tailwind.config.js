@@ -10,6 +10,8 @@ module.exports = {
         theme: '#3B82F6 ',
         secondary: '#00FF00',
         tertiary: '#0000FF',
+        bgColor: '#F3F4F6',
+        textColor: '#ffffff',
       },
     },
   },
