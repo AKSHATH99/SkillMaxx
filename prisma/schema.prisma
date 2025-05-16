@@ -14,12 +14,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id      Int       @id@default(autoincrement())
-  email   String    @unique
-  name    String? 
-  password String    
-  createdAt   DateTime @default(now())
 
-  
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  isCreator Boolean  @default(false)
+  createdAt DateTime @default(now())
+  videos    Video[]  
 }
+model Video {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  videoUrl    String
+  isPremium   Boolean  @default(false)
+  creatorId   String
+  creator     User     @relation(fields: [creatorId], references: [id])
+  createdAt   DateTime @default(now())
+}
+
