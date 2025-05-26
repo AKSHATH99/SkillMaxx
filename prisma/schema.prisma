@@ -1,12 +1,5 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -14,23 +7,62 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  isCreator Boolean  @default(false)
-  createdAt DateTime @default(now())
-  videos    Video[]  
-}
-model Video {
-  id          String   @id @default(uuid())
-  title       String
-  description String
-  videoUrl    String
-  isPremium   Boolean  @default(false)
-  creatorId   String
-  creator     User     @relation(fields: [creatorId], references: [id])
-  createdAt   DateTime @default(now())
+  id                     String               @id @default(uuid())
+  email                  String               @unique
+  password               String
+  isCreator              Boolean              @default(false)
+  createdAt              DateTime             @default(now())
+
+  projectsOwned          Project[]            @relation("UserProjects")
+  projectContributions   ProjectContributor[]
+  collabApplications     CollabApplication[]
 }
 
+model Project {
+  id                    String                @id @default(uuid())
+  title                 String
+  description           String
+  githubUrl             String
+  liveUrl               String?
+  techStack             String[]
+  screenshots           String[]             // Array of image URLs
+  acceptingCollabs      Boolean              @default(false)
+  collabDescription     String?
+  createdAt             DateTime             @default(now())
+
+  ownerId               String
+  owner                 User                 @relation("UserProjects", fields: [ownerId], references: [id])
+
+  contributors          ProjectContributor[]
+  collabApplications    CollabApplication[]
+}
+
+model ProjectContributor {
+  id          String   @id @default(uuid())
+  projectId   String
+  userId      String
+  role        String?
+  joinedAt    DateTime @default(now())
+
+  project     Project  @relation(fields: [projectId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+}
+
+model CollabApplication {
+  id          String             @id @default(uuid())
+  projectId   String
+  userId      String
+  message     String
+  status      ApplicationStatus @default(PENDING)
+  createdAt   DateTime          @default(now())
+
+  project     Project            @relation(fields: [projectId], references: [id])
+  user        User               @relation(fields: [userId], references: [id])
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
