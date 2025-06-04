@@ -1,11 +1,12 @@
-  import { PrismaClient } from "../../../../../generated/prisma/index.js";
+import { PrismaClient } from "@prisma/client";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
 export async function POST(request) {
-  const { email, password } = await request.json();
+  const { email, password ,username , name } = await request.json();
+  console.log("Received data:", { email, password, username, name });
 
   // const {email, password} = userdata;
   try {
@@ -25,6 +26,8 @@ export async function POST(request) {
       data: {
         email: email,
         password: hashedPassword,
+        username: username,
+        Name: name,
       },
     }); 
 
