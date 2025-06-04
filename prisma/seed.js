@@ -8,6 +8,8 @@ async function main() {
       email: 'alice@example.com',
       password: 'hashed_password',
       isCreator: true,
+      username: 'alice',
+      Name: 'Alice Smith',
     },
   });
 

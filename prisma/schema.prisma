@@ -9,6 +9,8 @@ datasource db {
 
 model User {
   id                     String               @id @default(uuid())
+  Name                   String
+  username               String
   email                  String               @unique
   password               String
   isCreator              Boolean              @default(false)
@@ -23,13 +25,14 @@ model Project {
   id                    String                @id @default(uuid())
   title                 String
   description           String
-  githubUrl             String
+  githubUrl             String?
   liveUrl               String?
   techStack             String[]
   screenshots           String[]             // Array of image URLs
   acceptingCollabs      Boolean              @default(false)
   collabDescription     String?
   createdAt             DateTime             @default(now())
+  demoVideo             String?
 
   ownerId               String
   owner                 User                 @relation("UserProjects", fields: [ownerId], references: [id])

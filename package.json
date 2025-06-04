@@ -21,6 +21,7 @@
     "aws-sdk": "^2.1692.0",
     "bcrypt": "^6.0.0",
     "body-parser": "^2.2.0",
+    "cloudinary": "^2.6.1",
     "cookie": "^1.0.2",
     "jsonwebtoken": "^9.0.2",
     "lowlight": "^3.3.0",
