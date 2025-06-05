@@ -15,21 +15,47 @@ cloudinary.config({
  */
 export const uploadFile = async (file, folder = 'uploads') => {
   try {
+    // If file is a Buffer or ArrayBuffer, use upload_stream
+    if (file instanceof Buffer || file instanceof ArrayBuffer) {
+      // Convert ArrayBuffer to Buffer if needed
+      const buffer = file instanceof Buffer ? file : Buffer.from(file);
+      return await new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder,
+            resource_type: 'auto',
+          },
+          (error, result) => {
+            if (error) {
+              console.error('Cloudinary upload error:', error);
+              resolve({ success: false, error: error.message });
+            } else {
+              resolve({
+                success: true,
+                url: result.secure_url,
+                public_id: result.public_id,
+              });
+            }
+          }
+        );
+        stream.end(buffer);
+      });
+    }
+    // Otherwise, treat as string/URL
     const result = await cloudinary.uploader.upload(file, {
       folder,
-      resource_type: 'auto'
+      resource_type: 'auto',
     });
-
     return {
       success: true,
       url: result.secure_url,
-      public_id: result.public_id
+      public_id: result.public_id,
     };
   } catch (error) {
     console.error('Cloudinary upload error:', error);
     return {
       success: false,
-      error: error.message
+      error: error.message,
     };
   }
 };
