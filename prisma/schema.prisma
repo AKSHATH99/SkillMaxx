@@ -15,10 +15,11 @@ model User {
   password               String
   isCreator              Boolean              @default(false)
   createdAt              DateTime             @default(now())
-
   projectsOwned          Project[]            @relation("UserProjects")
   projectContributions   ProjectContributor[]
   collabApplications     CollabApplication[]
+  reviews                Review[]             // Added missing relation
+  reviewLikes            ReviewLike[]         // Added missing relation
 }
 
 model Project {
@@ -33,12 +34,11 @@ model Project {
   collabDescription     String?
   createdAt             DateTime             @default(now())
   demoVideo             String?
-
   ownerId               String
   owner                 User                 @relation("UserProjects", fields: [ownerId], references: [id])
-
   contributors          ProjectContributor[]
   collabApplications    CollabApplication[]
+  reviews               Review[]             // Added missing relation
 }
 
 model ProjectContributor {
@@ -47,7 +47,6 @@ model ProjectContributor {
   userId      String
   role        String?
   joinedAt    DateTime @default(now())
-
   project     Project  @relation(fields: [projectId], references: [id])
   user        User     @relation(fields: [userId], references: [id])
 }
@@ -59,13 +58,45 @@ model CollabApplication {
   message     String
   status      ApplicationStatus @default(PENDING)
   createdAt   DateTime          @default(now())
-
   project     Project            @relation(fields: [projectId], references: [id])
   user        User               @relation(fields: [userId], references: [id])
+}
+
+model Review {
+  id         String       @id @default(uuid())
+  comment      String
+  uiRating     Int
+  performanceRating Int
+  ideaRating   Int
+  overallRating Int
+  tag          ReviewTag
+  createdAt  DateTime @default(now())
+  userId     String
+  projectId  String
+  user   User     @relation(fields: [userId], references: [id])
+  project    Project  @relation(fields: [projectId], references: [id])
+  likes   ReviewLike[]
+}
+
+model ReviewLike {
+  id        String   @id @default(uuid())
+  reviewId  String
+  userId    String
+  createdAt DateTime @default(now())
+  review    Review   @relation(fields: [reviewId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 enum ApplicationStatus {
   PENDING
   ACCEPTED
   REJECTED
+}
+
+enum ReviewTag {
+  DESIGN
+  FUNCTIONALITY
+  PERFORMANCE
+  INNOVATION
+  USER_EXPERIENCE
 }
